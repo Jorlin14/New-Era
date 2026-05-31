@@ -24,21 +24,73 @@ enum OrderStatus {
 }
 
 model User {
+
   id        String   @id @default(uuid())
   email     String   @unique
   password  String   
   name      String
+  phone     String?  // Importante para domicilios
   role      Role     @default(CUSTOMER)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones arregladas para cubrir tus 4 roles
   ordersAsCustomer  Order[] @relation("CustomerOrders")
   ordersAsDeliverer Order[] @relation("DelivererOrders")
   ordersAsCashier   Order[] @relation("CashierOrders")
 
+  addresses         Address[] // Un usuario puede tener varias direcciones
+
+
+
   @@map("users") 
+
+}
+
+model Address {
+
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  label     String  // Ejemplo: "Casa", "Trabajo"
+  address   String
+  city      String
+  latitude  Float?  // Para mapas
+  longitude Float?
+  isDefault Boolean @default(false)
+
+  @@map("addresses")
+
+}
+
+model Order {
+
+  id          String      @id @default(uuid())
+  status      OrderStatus @default(PENDING)
+  total       Decimal     @db.Decimal(10, 2)
+  address     String      // Se copia la dirección aquí para que quede fija históricamente
+
+  // Tiempos para KPIs
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  dispatchedAt DateTime?
+  deliveredAt  DateTime?
+
+  customerId  String
+  customer    User        @relation("CustomerOrders", fields: [customerId], references: [id])
+
+  delivererId String?
+  deliverer   User?       @relation("DelivererOrders", fields: [delivererId], references: [id])
+
+  cashierId   String?
+  cashier     User?       @relation("CashierOrders", fields: [cashierId], references: [id])
+
+  items       OrderItem[]
+
+  @@index([customerId])
+  @@index([status])
+  @@map("orders")
+
 }
 
 model Category {
@@ -66,31 +118,6 @@ model Product {
   orderItems  OrderItem[]
 
   @@map("products")
-}
-
-model Order {
-  id          String      @id @default(uuid())
-  status      OrderStatus @default(PENDING)
-  total       Decimal     @db.Decimal(10, 2)
-  address     String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // 1. El cliente que compra (Obligatorio)
-  customerId  String
-  customer    User        @relation("CustomerOrders", fields: [customerId], references: [id])
-  
-  // 2. El domiciliario que entrega (Opcional al inicio)
-  delivererId String?
-  deliverer   User?       @relation("DelivererOrders", fields: [delivererId], references: [id])
-
-  // 3. El cajero que despacha (Opcional al inicio)
-  cashierId   String?
-  cashier     User?       @relation("CashierOrders", fields: [cashierId], references: [id])
-
-  items       OrderItem[]
-
-  @@map("orders")
 }
 
 model OrderItem {

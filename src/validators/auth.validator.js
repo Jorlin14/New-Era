@@ -1,22 +1,57 @@
-// src/validators/auth.validator.js
-// Define los esquemas de validación para los endpoints de autenticación.
-// Joi valida tipos, formatos, longitudes y requerimientos ANTES de tocar la BD.
-
 import Joi from 'joi';
 
+// Esquema reutilizable para el password.
+const passwordSchema = Joi.string()
+  .min(8)
+  .max(72)
+  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'password seguro')
+  .required()
+  .messages({
+    'string.min': 'La contraseña debe tener al menos 8 caracteres.',
+    'string.max': 'La contraseña no puede superar los 72 caracteres.',
+    'string.pattern.name': 'La contraseña debe tener al menos una mayúscula, una minúscula y un número.',
+    'any.required': 'La contraseña es obligatoria.',
+  });
+
+// Esquema para POST /register
 export const registerSchema = Joi.object({
   name: Joi.string()
     .min(2)
     .max(100)
+    .trim()
     .required()
     .messages({
       'string.min': 'El nombre debe tener al menos 2 caracteres.',
+      'string.max': 'El nombre no puede superar los 100 caracteres.',
       'any.required': 'El nombre es obligatorio.',
     }),
 
   email: Joi.string()
-    .email()
-    .lowercase() // Normaliza a minúsculas automáticamente
+    .email({ tlds: { allow: false } })
+    .lowercase()
+    .trim()
+    .required()
+    .messages({
+      'string.email': 'El email no tiene un formato válido.',
+      'any.required': 'El email es obligatorio.',
+    }),
+
+  password: passwordSchema,
+
+  phone: Joi.string()
+    .pattern(/^\+?[\d\s\-()]{7,20}$/)
+    .optional()
+    .messages({
+      'string.pattern.base': 'El teléfono no tiene un formato válido.',
+    }),
+});
+
+// Esquema para POST /login
+export const loginSchema = Joi.object({
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .lowercase()
+    .trim()
     .required()
     .messages({
       'string.email': 'El email no tiene un formato válido.',
@@ -24,17 +59,28 @@ export const registerSchema = Joi.object({
     }),
 
   password: Joi.string()
-    .min(8)
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/) // Al menos 1 minúscula, 1 mayúscula, 1 número
     .required()
     .messages({
-      'string.min': 'La contraseña debe tener al menos 8 caracteres.',
-      'string.pattern.base': 'La contraseña debe contener mayúsculas, minúsculas y números.',
       'any.required': 'La contraseña es obligatoria.',
     }),
 });
 
-export const loginSchema = Joi.object({
-  email: Joi.string().email().lowercase().required(),
-  password: Joi.string().required(),
-});
+// VALIDATE
+export const validate = (schema) => (req, res, next) => {
+  const { error, value } = schema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
+  if (error) {
+    const messages = error.details.map((detail) => detail.message);
+    return res.status(400).json({
+      success: false,
+      message: 'Error de validación.',
+      errors: messages,
+    });
+  }
+
+  req.body = value;
+  next();
+};

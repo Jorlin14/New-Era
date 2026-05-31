@@ -1,19 +1,14 @@
-// src/routes/index.js
-// Router principal: centraliza y organiza todas las rutas de la API.
-// server.js solo necesita importar este archivo y montarlo en '/api'.
-
 import { Router } from 'express';
 import authRoutes from './auth.routes.js';
-// Semana 2: descomenta cuando crees estos módulos:
-// import productRoutes from './product.routes.js';
-// import orderRoutes   from './order.routes.js';
-// import userRoutes    from './user.routes.js';
 
 const router = Router();
 
-// Endpoint de salud: GET /api/health
-// Permite verificar que el servidor está corriendo sin autenticación.
-// Útil para herramientas de monitoreo y para el evaluador al probar la API.
+// ─────────────────────────────────────────────
+// ENRUTADOR PRINCIPAL
+// Centraliza todos los submódulos de la API
+// ─────────────────────────────────────────────
+
+// Health check para monitoreo y balanceadores de carga
 router.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -23,11 +18,11 @@ router.get('/health', (req, res) => {
   });
 });
 
-// Montar sub-routers por módulo.
-// Las URLs finales serán: /api/auth/login, /api/auth/register, etc.
+// Montaje de rutas
 router.use('/auth', authRoutes);
+
+// Futuros módulos:
 // router.use('/products', productRoutes);
-// router.use('/orders',   orderRoutes);
-// router.use('/users',    userRoutes);
+// router.use('/orders', orderRoutes);
 
 export default router;

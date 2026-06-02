@@ -29,7 +29,7 @@ model User {
   email     String   @unique
   password  String   
   name      String
-  phone     String?  // Importante para domicilios
+  phone     String?
   role      Role     @default(CUSTOMER)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -39,7 +39,7 @@ model User {
   ordersAsDeliverer Order[] @relation("DelivererOrders")
   ordersAsCashier   Order[] @relation("CashierOrders")
 
-  addresses         Address[] // Un usuario puede tener varias direcciones
+  addresses         Address[]
 
 
 
@@ -52,10 +52,10 @@ model Address {
   id        String  @id @default(uuid())
   userId    String
   user      User    @relation(fields: [userId], references: [id])
-  label     String  // Ejemplo: "Casa", "Trabajo"
+  label     String
   address   String
   city      String
-  latitude  Float?  // Para mapas
+  latitude  Float?
   longitude Float?
   isDefault Boolean @default(false)
 
@@ -68,7 +68,7 @@ model Order {
   id          String      @id @default(uuid())
   status      OrderStatus @default(PENDING)
   total       Decimal     @db.Decimal(10, 2)
-  address     String      // Se copia la dirección aquí para que quede fija históricamente
+  address     String
 
   // Tiempos para KPIs
   createdAt   DateTime    @default(now())

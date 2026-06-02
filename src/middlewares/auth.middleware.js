@@ -1,10 +1,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../config/database.js';
 
-// ─────────────────────────────────────────────
-// MIDDLEWARE 1: VERIFICAR TOKEN
-// Valida el JWT y comprueba el estado del usuario en la base de datos
-// ─────────────────────────────────────────────
+// Verify Token
 export const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -35,7 +32,7 @@ export const verifyToken = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Tu cuenta ha sido desactivada.' });
     }
 
-    // 4. Inyectar datos en la request para el controlador
+    // 4. Inyectar data en el request para el controller
     req.user = user;
     next();
 
@@ -47,13 +44,9 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
-// ─────────────────────────────────────────────
-// MIDDLEWARE 2: VERIFICAR ROL (Fábrica)
-// Uso: checkRole('ADMIN', 'CASHIER')
-// ─────────────────────────────────────────────
+// Check Role
 export const checkRole = (...allowedRoles) => {
   return (req, res, next) => {
-    // Falla de seguridad interna: si req.user no existe, se olvidaron de poner verifyToken antes
     if (!req.user) {
       return res.status(500).json({ success: false, message: 'Error interno: Falta verificar token.' });
     }

@@ -5,17 +5,14 @@ import { validate, registerSchema, loginSchema } from '../validators/auth.valida
 
 const router = Router();
 
-// ─────────────────────────────────────────────
-// RUTAS DE AUTENTICACIÓN
-// Flujo: Validación (Joi) -> Controlador -> Respuesta
-// ─────────────────────────────────────────────
+// Auth Routes
+// Flujo: Joi -> Controller -> Response
 
-// Rutas Públicas
+// Public Routes
 router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
 
-// Rutas Privadas
-// verifyToken asegura que haya un JWT válido antes de llamar a getMe
+// Private Routes
 router.get('/me', verifyToken, getMe);
 
 export default router;

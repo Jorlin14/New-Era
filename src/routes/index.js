@@ -2,6 +2,8 @@ import { Router } from 'express';
 import authRoutes from './auth.routes.js';
 import categoryRoutes from './category.routes.js';
 import productRoutes from './product.routes.js';
+import orderRoutes    from './order.routes.js';
+import addressRoutes  from './address.routes.js';
 
 const router = Router();
 
@@ -21,8 +23,9 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/products',   productRoutes);
-// Futuros módulos: [orders, deliveries, payments]
+router.use('/orders',     orderRoutes);
+router.use('/addresses',  addressRoutes);
+// Futuros módulos: [deliveries, payments]
 
 export default router;
-
 

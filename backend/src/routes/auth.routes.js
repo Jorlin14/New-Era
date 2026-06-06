@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { register, login, getMe } from '../controllers/auth.controller.js';
+import { verifyToken } from '../middlewares/auth.middleware.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { registerSchema, loginSchema } from '../validators/auth.validator.js';
+
+const router = Router();
+
+// PUBLIC
+router.post('/register', validate(registerSchema), register);
+router.post('/login', validate(loginSchema), login);
+
+// PRIVATE
+router.get('/me', verifyToken, getMe);
+
+export default router;

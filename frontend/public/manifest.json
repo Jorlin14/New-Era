@@ -1,0 +1,25 @@
+{
+  "name": "New Era Domicilios",
+  "short_name": "New Era",
+  "description": "Tu supermercado digital con entrega a domicilio. Productos frescos y de calidad directo a tu hogar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0C447C",
+  "orientation": "portrait-primary",
+  "categories": ["shopping", "food"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+import type { Metadata, Viewport } from 'next';
+import { Geist } from 'next/font/google';
+import Providers from '@/components/Providers';
+import './globals.css';
+
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+
+export const metadata: Metadata = {
+  title: 'New Era Supermercado | Tu súper fresco, rápido y directo a tu hogar',
+  description:
+    'Productos frescos y de calidad con entrega a domicilio. Frutas, verduras, lácteos, carnes y más — directo a la puerta de tu hogar en minutos.',
+  keywords: [
+    'supermercado',
+    'domicilio',
+    'mercado online',
+    'productos frescos',
+    'entrega rápida',
+    'Colombia',
+  ],
+  manifest: '/manifest.json',
+  icons: {
+    icon: [{ url: '/logo.png', type: 'image/png' }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#0C447C' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F172A' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es" className={`font-sans ${geist.variable}`} suppressHydrationWarning>
+      <body className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased">
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
